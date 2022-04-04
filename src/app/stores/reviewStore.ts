@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import {addMinutes} from 'date-fns'
 import agent from "../api/agent";
 import { Review, ReviewFormValues } from "../models/review";
 import { Pagination, PagingParams } from "../models/pagination";
@@ -37,7 +38,7 @@ export default class ReviewStore {
         try {
             const result = await agent.Reviews.list(this.axiosParams);
             result.data.forEach(review => {
-                this.setReview(review);
+                this.setInitReview(review);
             })
             this.setPagination(result.pagination);
             this.setLoadingInitial(false);
@@ -56,6 +57,21 @@ export default class ReviewStore {
         review.endDate = new Date(review.endDate!);
         review.createDate = new Date(review.createDate!);
         this.reviewRegistry.set(review.id, review);
+    }
+
+    private setInitReview = (review: Review) => {
+        review.startDate = this.setOffset(new Date(review.startDate!));
+        review.endDate = this.setOffset(new Date(review.endDate!));
+        review.createDate = this.setOffset(new Date(review.createDate!));
+
+        this.reviewRegistry.set(review.id, review);
+    }
+
+    private setOffset = (date:Date):Date => {
+        const offset = new Date().getTimezoneOffset();
+        const offsetDate = addMinutes(date, -offset);
+        
+        return offsetDate;
     }
 
     setLoadingInitial = (state: boolean) => {
