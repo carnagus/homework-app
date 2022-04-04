@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { PaginatedResult } from '../models/pagination';
 import { Review, ReviewFormValues } from '../models/review';
 
-axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+axios.defaults.baseURL = 'https://relex-homework.azurewebsites.net/api';
 
 axios.interceptors.response.use(async response => {
 
